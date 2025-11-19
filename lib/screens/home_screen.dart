@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_v2ray/flutter_v2ray.dart';
-import 'package:vpn_mobile/widgets/connect_button.dart';
-import 'package:vpn_mobile/widgets/vpn_status_widget.dart';
-import '../service/vpn_service.dart';
+
+import 'vpn_page.dart';
+import 'servers_page.dart';
+import 'settings_page.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -12,72 +12,40 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreenState extends State<HomeScreen> {
-  final vpn = VpnService.instance;
-  V2RayStatus status =
-      V2RayStatus(); // имеет duration/uploadSpeed/downloadSpeed/upload/download/state
+  int _selectedIndex = 0;
 
-  bool get connected => status.state.toUpperCase() == 'CONNECTED';
+  final List<Widget> _pages = [ServersPage(), VpnPage(), SettingsPage()];
 
   @override
   void initState() {
     super.initState();
-    vpn.attach((s) {
-      if (mounted) {
-        setState(() => status = s);
-      }
-    });
   }
 
   @override
   void dispose() {
-    vpn.detach();
     super.dispose();
   }
 
-  Future<void> toggle() async {
-    if (connected) {
-      await vpn.disconnect();
-    } else {
-      // Подставь конфиг из API/файла/строки вместо ravenSampleConfig.
-      final ravenSampleConfig =
-          "vless://d9020b88-cc39-2988-0254-25940368f6f9@raven.net.ru:443?type=tcp&security=reality&pbk=sompOjrok5Nr0zdcLcgFKdE98YJFb0GthGkRUyaleXs&fp=chrome&sni=yahoo.com&sid=fd6546ec484b44&spx=%2F&flow=xtls-rprx-vision#Corvin-Dfghhjk670348974";
-      await vpn.connect(config: ravenSampleConfig, remark: 'Raven VPN');
-    }
+  void _selectPage(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('RAVEN'),
-        actions: [VPNStatusText(status: status)],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // StatusPanel(status: status),
-            // const SizedBox(height: 24),
-            RavenButton(connected: connected, onTap: toggle),
-          ],
-        ),
-      ),
+      appBar: AppBar(title: Text('RAVEN')),
+
+      body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
         items: [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.language),
-            label: 'Servers',
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.verified_user),
-            label: 'VPN',
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.settings),
-            label: 'Settings',
-          ),
+          BottomNavigationBarItem(icon: const Icon(Icons.language), label: 'Servers'),
+          BottomNavigationBarItem(icon: const Icon(Icons.verified_user), label: 'VPN'),
+          BottomNavigationBarItem(icon: const Icon(Icons.settings), label: 'Settings'),
         ],
-        onTap: (int index) {debugPrint(index.toString());},
+        onTap: _selectPage,
       ),
     );
   }

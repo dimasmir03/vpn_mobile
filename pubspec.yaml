@@ -37,6 +37,8 @@ dependencies:
   flutter_v2ray: ^1.0.10
   google_sign_in: ^7.1.1
   http: ^1.5.0
+  flutter_svg: ^2.2.2
+  country_icons: ^3.0.0
 
 dev_dependencies:
   flutter_test:
