@@ -1,0 +1,11 @@
+{
+   "cmake.ignoreCMakeListsMissing": true,
+   "dart.sdkPath": "C:/Programs/Flutter/flutter/bin/dart.bat",
+   "dart.flutterSdkPath": "C:/Programs/Flutter/flutter/bin/flutter.bat",
+   "dart.lineLength": 100,
+   "editor.formatOnSave": true,
+   "files.exclude": {
+      "**/.dart_tool": true,
+      "**/build": true
+   }
+}

@@ -116,3 +116,38 @@ class _Metric extends StatelessWidget {
     );
   }
 }
+
+class VPNStatusText extends StatelessWidget {
+  final V2RayStatus status;
+
+  const VPNStatusText({super.key, required this.status});
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+
+    return Padding(
+      padding: const EdgeInsets.only(right: 20),
+      child: Row(
+        children: [
+          Icon(
+            Icons.fiber_manual_record,
+            color: status.state.toUpperCase() == 'CONNECTED'
+                ? Colors.green
+                : Colors.red,
+            size: 16,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            status.state.toUpperCase() == 'CONNECTED'
+                // ? 'Подключено'
+                // : 'Отключено',
+                ? 'Protected'
+                : 'Unprotected',
+            style: text.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          ),
+        ],
+      ),
+    );
+  }
+}

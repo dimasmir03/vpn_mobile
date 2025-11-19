@@ -8,56 +8,76 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomeScreen> createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  final _vpn = VpnService.instance;
-  V2RayStatus _status =
+class HomeScreenState extends State<HomeScreen> {
+  final vpn = VpnService.instance;
+  V2RayStatus status =
       V2RayStatus(); // имеет duration/uploadSpeed/downloadSpeed/upload/download/state
 
-  bool get _connected => _status.state.toUpperCase() == 'CONNECTED';
+  bool get connected => status.state.toUpperCase() == 'CONNECTED';
 
   @override
   void initState() {
     super.initState();
-    _vpn.attach((s) {
+    vpn.attach((s) {
       if (mounted) {
-        setState(() => _status = s);
+        setState(() => status = s);
       }
     });
   }
 
   @override
   void dispose() {
-    _vpn.detach();
+    vpn.detach();
     super.dispose();
   }
 
-  Future<void> _toggle() async {
-    if (_connected) {
-      await _vpn.disconnect();
+  Future<void> toggle() async {
+    if (connected) {
+      await vpn.disconnect();
     } else {
-      // Подставь свой конфиг из API/файла/строки вместо ravenSampleConfig.
+      // Подставь конфиг из API/файла/строки вместо ravenSampleConfig.
       final ravenSampleConfig =
           "vless://d9020b88-cc39-2988-0254-25940368f6f9@raven.net.ru:443?type=tcp&security=reality&pbk=sompOjrok5Nr0zdcLcgFKdE98YJFb0GthGkRUyaleXs&fp=chrome&sni=yahoo.com&sid=fd6546ec484b44&spx=%2F&flow=xtls-rprx-vision#Corvin-Dfghhjk670348974";
-      await _vpn.connect(config: ravenSampleConfig, remark: 'Raven VPN');
+      await vpn.connect(config: ravenSampleConfig, remark: 'Raven VPN');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Raven VPN')),
+      appBar: AppBar(
+        title: Text('RAVEN'),
+        actions: [VPNStatusText(status: status)],
+      ),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            StatusPanel(status: _status),
-            const SizedBox(height: 24),
-            RavenButton(connected: _connected, onTap: _toggle),
+            // StatusPanel(status: status),
+            // const SizedBox(height: 24),
+            RavenButton(connected: connected, onTap: toggle),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.language),
+            label: 'Servers',
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.verified_user),
+            label: 'VPN',
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.settings),
+            label: 'Settings',
+          ),
+        ],
+        onTap: (int index) {debugPrint(index.toString());},
       ),
     );
   }
